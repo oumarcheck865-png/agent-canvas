@@ -36,9 +36,29 @@ OpenHands engine will serve as the agent backend (not yet wired up).
 - `components/ui/` — shadcn/ui primitives (button, card, dialog, dropdown-menu,
   input, navigation-menu, separator, tooltip, accordion)
 - `lib/utils.ts` — `cn()` helper
+- `src/` — intégration progressive de la plateforme OpenHands :
+  - `src/landing/` — ancrage de la landing existante (non déplacée)
+  - `src/platform/` — modules plateforme (dashboard, chat, agents, projects,
+    preview, terminal) — points de montage `enabled: false`
+  - `src/services/` — couches d'abstraction (websocket, agent, mcp, skills,
+    ai-provider) — contrats + factories `null`, rien de branché
+  - `src/components/platform/` — composants UI partagés (à venir)
 - `vendor/OpenHands` — OpenHands reference repo (agent backend, do NOT modify
   agent logic / WebSockets / MCP / Skills / workflows at this stage)
 - `vendor/saas-landing-template` — original template source (reference only)
+- `INTEGRATION.md` — cartographie détaillée modules OpenHands → Agent Canvas
+
+## OpenHands platform (vendor/OpenHands)
+- Stack DIFFÉRENTE de la landing : Vite + React Router 7 + HeroUI
+  (@heroui/react) + Zustand + TanStack Query + @openhands/typescript-client.
+  Alias `#/*` → `src/*`. Pkg `@openhands/agent-canvas` v1.13.0.
+- Les composants OpenHands ne sont PAS copiés tels quels dans Next.js
+  (casserait le build). On crée des couches d'abstraction dans `src/services/`
+  et des points de montage dans `src/platform/`.
+- Le moteur agent (runtime Python) est côté agent-server, accédé via
+  @openhands/typescript-client. Le repo frontend ne contient pas le runtime.
+- Règle : ne pas réécrire le moteur OpenHands (runtime, websockets, MCP,
+  skills, événements). Réutiliser au maximum le code officiel.
 
 ## Design conventions
 - Dark premium theme is the default; light mode supported via next-themes.
