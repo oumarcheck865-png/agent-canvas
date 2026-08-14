@@ -17,12 +17,15 @@ import {
   TimerIcon,
   HamburgerMenuIcon,
   Cross1Icon,
+  RocketIcon,
 } from "@radix-ui/react-icons";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function NavBar() {
+  const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -46,6 +49,11 @@ export default function NavBar() {
   ];
 
   const showNavbarBlur = isScrolled || isMenuOpen;
+
+  // La landing navbar est masquée sur les routes /platform (la plateforme a sa
+  // propre barre latérale). Aucune suppression : la navbar reste intacte
+  // partout ailleurs.
+  if (pathname?.startsWith("/platform")) return null;
 
   return (
     <nav
@@ -102,6 +110,17 @@ export default function NavBar() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-80">
+                <DropdownMenuItem asChild>
+                  <Link href="/platform/workspace" className="flex items-start">
+                    <RocketIcon className="mr-2 mt-0.5 h-4 w-4" />
+                    <div>
+                      <div className="font-semibold">Accéder à la plateforme</div>
+                      <div className="text-sm text-muted-foreground">
+                        Ouvrez l'espace de travail Agent Canvas.
+                      </div>
+                    </div>
+                  </Link>
+                </DropdownMenuItem>
                 <DropdownMenuItem>
                   <OpenInNewWindowIcon className="mr-2 h-4 w-4" />
                   <div>
@@ -197,6 +216,19 @@ export default function NavBar() {
                     </Link>
                   </motion.div>
                 ))}
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3, delay: 0.35 }}
+                >
+                  <Link
+                    href="/platform/workspace"
+                    className="block px-3 py-2 text-base font-medium text-primary hover:bg-muted rounded-md transition-colors duration-200"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Plateforme
+                  </Link>
+                </motion.div>
                 <motion.div
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}

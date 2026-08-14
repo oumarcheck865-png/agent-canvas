@@ -43,7 +43,6 @@ export function createAgentRuntime(): AgentRuntimeController | null {
         title: c.title,
         createdAt: c.created_at,
         updatedAt: c.last_updated_at,
-        status: c.status,
       }));
     },
   };
