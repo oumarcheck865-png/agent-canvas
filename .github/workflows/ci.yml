@@ -1,0 +1,94 @@
+name: CI
+
+on:
+  push:
+    branches: [master, "feat/**"]
+  pull_request:
+    branches: [master]
+
+# Évite les exécutions concurrentes inutiles d'une même branche.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    name: Lint · Typecheck · Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # vendor/ est gitignored ; on n'a pas besoin de l'historique complet.
+          fetch-depth: 1
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Build production
+        run: pnpm build
+        env:
+          NEXT_TELEMETRY_DISABLED: "true"
+          NEXT_PUBLIC_TELEMETRY_DISABLED: "true"
+
+  security:
+    name: Security audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: npm audit (production deps)
+        run: pnpm audit --prod --audit-level=high
+        continue-on-error: true
+
+      - name: Vérifier l'absence de secrets codés
+        run: |
+          set -e
+          # Recherche de motifs de secret fréquents dans le code source
+          # (hors vendor, node_modules, .next, docs de référence).
+          if grep -rniE "(api_key|apikey|secret|token)[\"']?\s*[:=]\s*[\"'](sk-[a-zA-Z0-9]{20}|ghp_[a-zA-Z0-9]{20}|phc_[a-zA-Z0-9]{20})" \
+            --include="*.ts" --include="*.tsx" --include="*.js" --include="*.mjs" --include="*.json" \
+            . 2>/dev/null | grep -vE "vendor/|node_modules/|\.next/|docs/|\.env\.example" ; then
+            echo "❌ Secret potentiel détecté dans le code source"
+            exit 1
+          fi
+          echo "✅ Aucun secret codé détecté dans le code source"
