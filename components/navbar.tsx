@@ -23,9 +23,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAuth } from "@/components/auth-provider";
 
 export default function NavBar() {
   const pathname = usePathname();
+  const { session } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -111,12 +113,12 @@ export default function NavBar() {
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-80">
                 <DropdownMenuItem asChild>
-                  <Link href="/platform/workspace" className="flex items-start">
+                  <Link href="/platform/chat" className="flex items-start">
                     <RocketIcon className="mr-2 mt-0.5 h-4 w-4" />
                     <div>
                       <div className="font-semibold">Accéder à la plateforme</div>
                       <div className="text-sm text-muted-foreground">
-                        Ouvrez l'espace de travail Agent Canvas.
+                        Ouvrez le chat Agent Canvas.
                       </div>
                     </div>
                   </Link>
@@ -175,12 +177,20 @@ export default function NavBar() {
             </DropdownMenu>
           </div>
           <div className="flex items-center space-x-2 sm:space-x-4">
-            <Button asChild variant="ghost" size="sm" className="hidden sm:flex">
-              <Link href="/login">Connexion</Link>
-            </Button>
-            <Button asChild size="sm" className="hidden sm:flex">
-              <Link href="/signup">Inscription</Link>
-            </Button>
+            {session ? (
+              <Button asChild size="sm" className="hidden sm:flex">
+                <Link href="/platform/chat">Tableau de bord</Link>
+              </Button>
+            ) : (
+              <>
+                <Button asChild variant="ghost" size="sm" className="hidden sm:flex">
+                  <Link href="/login">Connexion</Link>
+                </Button>
+                <Button asChild size="sm" className="hidden sm:flex">
+                  <Link href="/signup">Inscription</Link>
+                </Button>
+              </>
+            )}
             <ThemeSwitcher />
           </div>
         </div>
@@ -222,7 +232,7 @@ export default function NavBar() {
                   transition={{ duration: 0.3, delay: 0.35 }}
                 >
                   <Link
-                    href="/platform/workspace"
+                    href="/platform/chat"
                     className="block px-3 py-2 text-base font-medium text-primary hover:bg-muted rounded-md transition-colors duration-200"
                     onClick={() => setIsMenuOpen(false)}
                   >
@@ -235,16 +245,26 @@ export default function NavBar() {
                   transition={{ duration: 0.3, delay: 0.4 }}
                   className="flex flex-col gap-2 px-3 pt-2"
                 >
-                  <Button asChild variant="outline" size="sm">
-                    <Link href="/login" onClick={() => setIsMenuOpen(false)}>
-                      Connexion
-                    </Link>
-                  </Button>
-                  <Button asChild size="sm">
-                    <Link href="/signup" onClick={() => setIsMenuOpen(false)}>
-                      Inscription
-                    </Link>
-                  </Button>
+                  {session ? (
+                    <Button asChild size="sm">
+                      <Link href="/platform/chat" onClick={() => setIsMenuOpen(false)}>
+                        Tableau de bord
+                      </Link>
+                    </Button>
+                  ) : (
+                    <>
+                      <Button asChild variant="outline" size="sm">
+                        <Link href="/login" onClick={() => setIsMenuOpen(false)}>
+                          Connexion
+                        </Link>
+                      </Button>
+                      <Button asChild size="sm">
+                        <Link href="/signup" onClick={() => setIsMenuOpen(false)}>
+                          Inscription
+                        </Link>
+                      </Button>
+                    </>
+                  )}
                 </motion.div>
               </motion.div>
             </motion.div>

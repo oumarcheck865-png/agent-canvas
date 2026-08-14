@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 
-/** Le point d'entrée `/platform` redirige vers l'espace de travail. */
+/** Le point d'entrée `/platform` redirige vers le chat principal. */
 export default function PlatformIndex() {
-  redirect("/platform/workspace");
+  redirect("/platform/chat");
 }

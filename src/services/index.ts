@@ -14,4 +14,5 @@ export * as agent from "./agent";
 export * as mcp from "./mcp";
 export * as skills from "./skills";
 export * as aiProvider from "./ai-provider";
+export * as auth from "./auth";
 export * as config from "./config";
