@@ -35,3 +35,5 @@ export {
   aiProviderRegistry,
   AIProviderRegistry,
 } from "./registry";
+
+export { defaultAIProvider, registerDefaultAIProvider } from "./default-provider";
