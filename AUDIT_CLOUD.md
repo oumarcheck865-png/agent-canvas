@@ -33,7 +33,7 @@
 ### 2.1 Télémétrie PostHog — À DÉSACTIVER / REMPLACER
 | Élément | Valeur | Localisation |
 | ------- | ------ | ------------ |
-| Clé API PostHog | `phc_kBtz5nKmxVRRQ7HtPwr2QX9eMC5j65zE86QKocVNwb4U` | `config/defaults.json` → `telemetry.posthogApiKey` |
+| Clé API PostHog | `phc_…` (valeur en clair dans le vendor — non reprise ici) | `config/defaults.json` → `telemetry.posthogApiKey` |
 | Host PostHog | `https://us.i.posthog.com` | `config/defaults.json` → `telemetry.posthogHost` |
 | Proxy anti-adblock | `https://z.openhands.dev` | `mocks/analytics-handlers.ts`, `services/telemetry.ts` |
 | Config par défaut | `{ provider: "posthog" }` | `components/providers/agent-server-ui-providers.tsx` → `DEFAULT_AGENT_SERVER_ANALYTICS` |
