@@ -30,23 +30,46 @@ OpenHands engine will serve as the agent backend (not yet wired up).
 - `vendor/` is gitignored and is NOT part of the repo.
 
 ## Structure
-- `app/` — Next.js App Router (layout, page, providers, login/, signup/)
+- `app/` — Next.js App Router (layout, page, providers, login/, signup/,
+  platform/* — dashboard + 6 modules)
 - `components/` — landing sections (hero, navbar, pricing, testimonials, stats,
   partners, faq, footer, theme-switcher) + `auth-form.tsx` (shared login/signup)
 - `components/ui/` — shadcn/ui primitives (button, card, dialog, dropdown-menu,
   input, navigation-menu, separator, tooltip, accordion)
+- `components/platform/` — platform UI (platform-sidebar, platform-top-bar,
+  platform-page-header, use-platform-status) — design shadcn/Tailwind sombre
 - `lib/utils.ts` — `cn()` helper
 - `src/` — intégration progressive de la plateforme OpenHands :
-  - `src/landing/` — ancrage de la landing existante (non déplacée)
-  - `src/platform/` — modules plateforme (dashboard, chat, agents, projects,
-    preview, terminal) — points de montage `enabled: false`
-  - `src/services/` — couches d'abstraction (websocket, agent, mcp, skills,
-    ai-provider) — contrats + factories `null`, rien de branché
-  - `src/components/platform/` — composants UI partagés (à venir)
+  - `src/services/config.ts` — runtimeConfig reader (NEXT_PUBLIC_AI_PROVIDER_*,
+    NEXT_PUBLIC_AGENT_SERVER_*) — phase A
+  - `src/services/ai-provider/` — AI Provider Layer indépendant
+    (default-provider.ts) — phase B
+  - `src/services/agent/` — branché sur `backend/conversations-api.ts` — phase C
+  - `src/services/websocket/` — branché sur `backend/agent-server-socket.ts`
+  - `src/services/{mcp,skills}/` — contrats non branchés (réservés)
+- `backend/` — couche d'intégration OpenHands (phase C) :
+  - `agent-server-client.ts` (HTTP fetch), `agent-server-socket.ts` (WebSocket
+    natif, handshake auth), `conversations-api.ts` (CRUD), `index.ts` (barrel)
+- `docs/` — ENVIRONMENT.md, AI_PROVIDER.md, BACKEND.md, AUDIT_CLOUD.md,
+  INTEGRATION_PLAN.md
 - `vendor/OpenHands` — OpenHands reference repo (agent backend, do NOT modify
   agent logic / WebSockets / MCP / Skills / workflows at this stage)
 - `vendor/saas-landing-template` — original template source (reference only)
-- `INTEGRATION.md` — cartographie détaillée modules OpenHands → Agent Canvas
+- `INTEGRATION.md`, `INTEGRATION_PLAN.md` — cartographie OpenHands → Agent Canvas
+
+## Integration progress (phases A→D DONE, E in progress)
+- Phase A (security/config) — DONE: `.env.example`, `src/services/config.ts`,
+  `docs/ENVIRONMENT.md`. Aucune valeur cloud codée.
+- Phase B (AI Provider Layer) — DONE: `src/services/ai-provider/default-provider.ts`.
+- Phase C (backend) — DONE: `backend/*` (fetch + WebSocket natifs, PAS
+  @openhands/typescript-client — incompatible Next.js via HeroUI/RR7). Services
+  `agent` + `websocket` branchés.
+- Phase D (platform frontend) — DONE: `app/platform/*` (layout + 6 modules),
+  `components/platform/*`. Landing navbar masquée sur /platform (aucune
+  suppression). 14 routes build OK.
+- Phase E (tests/validation) — IN PROGRESS.
+- Règle tenue : zéro suppression de fichier, zéro fonctionnalité réécrite,
+  build vérifié à chaque phase.
 
 ## OpenHands platform (vendor/OpenHands)
 - Stack DIFFÉRENTE de la landing : Vite + React Router 7 + HeroUI
@@ -68,3 +91,6 @@ OpenHands engine will serve as the agent backend (not yet wired up).
 ## Git
 - Branch: master (local only, no remote configured)
 - Commit author: openhands <openhands@all-hands.dev>
+- Commits: Initial scaffold → fondation template → phases 1, A, B, C, D
+- `.env*.local` gitignored; only `.env.example` tracked (placeholders only).
+- `vendor/` gitignored (not part of the repo).
