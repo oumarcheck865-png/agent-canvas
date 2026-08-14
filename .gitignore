@@ -1,0 +1,23 @@
+# Dépôts externes clonés comme références locales
+vendor/
+
+# Environnements virtuels
+.venv/
+venv/
+env/
+
+# Dépendances
+node_modules/
+__pycache__/
+*.pyc
+
+# Fichiers système
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Variables d'environnement
+.env
+.env.local
