@@ -57,6 +57,7 @@ export function defineAIProvider(
     status: implementation?.status ?? (() => "unconfigured" as const),
     ...(implementation?.listModels ? { listModels: implementation.listModels } : {}),
     ...(implementation?.complete ? { complete: implementation.complete } : {}),
+    ...(implementation?.stream ? { stream: implementation.stream } : {}),
   };
 }
 

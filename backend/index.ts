@@ -34,3 +34,13 @@ export type {
   CreateConversationResponse,
   EventSearchResponse,
 } from "./conversations-api";
+
+export { filesApi } from "./files-api";
+export type { FileEntry, ListFilesResponse, ReadFileResponse } from "./files-api";
+
+export { TerminalSession } from "./terminal-api";
+export type {
+  TerminalSessionOptions,
+  TerminalOutput,
+  TerminalOutputHandler,
+} from "./terminal-api";

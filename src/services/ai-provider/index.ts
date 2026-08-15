@@ -26,6 +26,7 @@ export type {
   ChatCompletionRequest,
   ChatCompletionResponse,
   ChatMessage,
+  ChatStreamHandler,
   ModelInfo,
 } from "./types";
 

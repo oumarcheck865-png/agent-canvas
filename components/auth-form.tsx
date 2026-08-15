@@ -5,7 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useAuth } from "@/components/auth-provider";
 
 type AuthMode = "login" | "signup";
 
@@ -63,12 +65,35 @@ const providers = [
 export default function AuthForm({ mode }: AuthFormProps) {
   const isLogin = mode === "login";
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { signIn, signUp } = useAuth();
+  const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setError(null);
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+    const email = String(formData.get("email") ?? "");
+    const password = String(formData.get("password") ?? "");
+    const name = isLogin
+      ? undefined
+      : String(formData.get("name") ?? "").trim() || undefined;
+
     setIsLoading(true);
-    // Intégration d'authentification future (OpenHands backend / OAuth)
-    setTimeout(() => setIsLoading(false), 800);
+    try {
+      if (isLogin) {
+        await signIn({ email, password });
+      } else {
+        await signUp({ name, email, password });
+      }
+      // Parcours utilisateur : après authentification réussie, l'utilisateur
+      // arrive directement sur le panneau de chat principal.
+      router.push("/platform/chat");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Échec de l'authentification.");
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -188,6 +213,14 @@ export default function AuthForm({ mode }: AuthFormProps) {
                   ? "Se connecter"
                   : "S'inscrire"}
             </Button>
+            {error ? (
+              <p
+                role="alert"
+                className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive"
+              >
+                {error}
+              </p>
+            ) : null}
           </form>
 
           <p className="mt-6 text-center text-sm text-muted-foreground">

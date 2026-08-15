@@ -57,17 +57,28 @@ OpenHands engine will serve as the agent backend (not yet wired up).
 - `vendor/saas-landing-template` — original template source (reference only)
 - `INTEGRATION.md`, `INTEGRATION_PLAN.md` — cartographie OpenHands → Agent Canvas
 
-## Integration progress (phases A→D DONE, E in progress)
+## Integration progress (phases A→D DONE, E DONE, production mission DONE)
 - Phase A (security/config) — DONE: `.env.example`, `src/services/config.ts`,
   `docs/ENVIRONMENT.md`. Aucune valeur cloud codée.
 - Phase B (AI Provider Layer) — DONE: `src/services/ai-provider/default-provider.ts`.
 - Phase C (backend) — DONE: `backend/*` (fetch + WebSocket natifs, PAS
   @openhands/typescript-client — incompatible Next.js via HeroUI/RR7). Services
   `agent` + `websocket` branchés.
-- Phase D (platform frontend) — DONE: `app/platform/*` (layout + 6 modules),
+- Phase D (platform frontend) — DONE: `app/platform/*` (layout + modules),
   `components/platform/*`. Landing navbar masquée sur /platform (aucune
   suppression). 14 routes build OK.
-- Phase E (tests/validation) — IN PROGRESS.
+- Phase E (tests/validation) — DONE: `docs/PHASE_E_VALIDATION.md`.
+- Production mission — DONE (branche `feat/production-platform`) :
+  - Parcours utilisateur : Landing → Login/Signup → Chat (auth découplée,
+    `src/services/auth/`, RequireAuth/RequireGuest).
+  - Panneau de chat principal `/platform/chat` (AI Provider Layer, aucun modèle
+    connecté). AI Provider Layer étendu (local/self-hosted/self-hosted-gpu/
+    openai/anthropic/custom + streaming).
+  - Intégration progressive : `backend/{files,terminal}-api.ts` +
+    `src/services/{files,terminal}/`.
+  - CI/CD : `.github/workflows/{ci,deploy-prep}.yml` (pnpm, lint, typecheck,
+    build, security). ESLint 9 flat (`eslint.config.mjs`).
+  - `docs/{CLOUD_INDEPENDENCE,DEPLOYMENT}.md`. Télémétrie désactivée.
 - Règle tenue : zéro suppression de fichier, zéro fonctionnalité réécrite,
   build vérifié à chaque phase.
 
